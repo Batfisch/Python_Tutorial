@@ -1,7 +1,9 @@
 from flask import Flask
 from app import routes
+
+App = Flask(__name__)
+
+
 from config import Config
 
-app = Flask(__name__)
-
-app.config.from_object(Config)
+App.config.from_object(Config)
