@@ -110,3 +110,5 @@ config.py
 
 # db should not be seen
 app.db
+#zeug is just for trying out
+/zeug
