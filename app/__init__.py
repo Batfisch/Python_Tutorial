@@ -17,6 +17,8 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 login.login_view = 'login'
 
+# error message is sent to my mail adress if some error occured if not in
+# debbuging mode
 if not app.debug:
     if app.config['MAIL_SERVER']:
         auth = None
