@@ -5,7 +5,7 @@ from flask_login import UserMixin
 from app import login
 from hashlib import md5
 
-#many to many table for the followers, no need to declare a class
+# many to many table for the followers, no need to declare a class
 followers = db.Table('followers',
     db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
     db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
@@ -22,6 +22,7 @@ class User(UserMixin, db.Model):
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+
     followed = db.relationship(
         'User', secondary=followers,
         primaryjoin=(followers.c.follower_id == id),
@@ -43,19 +44,28 @@ class User(UserMixin, db.Model):
         return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
             digest, size)
 
-    # declaration for users followed by other users (not in use yet)
+    # declaration for users followed by other users
     def follow(self, user):
         if not self.is_following(user):
-            self.followed.user.append(user)
+            self.followed.append(user)
 
     def unfollow(self, user):
-        if not self.is_following(user):
+        if self.is_following(user):
             self.followed.remove(user)
 
     def is_following(self, user):
-        return self.followed.filter(followers.c.followed_id==user.id).count()>0
+        return self.followed.filter(followers.c.followed_id == user.id).count() > 0
 
-#declaration for database Posts (not in use yet)
+    # function to get the posts from followed users & own posts and order it by time
+    def followed_posts(self):
+        followed = Post.query.join(
+            followers, (followers.c.followed_id == Post.user_id)).filter(
+            followers.c.follower_id == self.id)
+        own = Post.query.filter_by(user_id=self.id)
+        return followed.union(own).order_by(Post.timestamp.desc())
+
+
+# declaration for database Posts (not in use yet)
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(140))
@@ -64,7 +74,6 @@ class Post(db.Model):
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
-
 
 
 @login.user_loader
