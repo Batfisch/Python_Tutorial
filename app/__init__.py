@@ -47,8 +47,7 @@ if not app.debug:
 
 
 from app import routes, models, errors
+from app.models import User, Post
 
-from app.models import User
-from app.models import Post
 
 
