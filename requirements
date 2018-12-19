@@ -1,0 +1,13 @@
+As of 19.12.2018
+
+python3.7
+
+used packages:
+
+flask
+    flask-wtf
+    flask-sqlalchemy
+    flask-migrate
+    flask-login
+    flask-mail
+pyjwt
