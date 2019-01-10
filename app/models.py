@@ -1,8 +1,9 @@
-from app import db
+from flask_login import UserMixin
+
+
+from app import db, login
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin
-from app import login
 from hashlib import md5
 
 # many to many table for the followers, no need to declare a class
@@ -65,7 +66,7 @@ class User(UserMixin, db.Model):
         return followed.union(own).order_by(Post.timestamp.desc())
 
 
-# declaration for database Posts (not in use yet)
+# declaration for database Posts
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(140))

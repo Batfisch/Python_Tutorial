@@ -1,7 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, PasswordField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError, Length
-from app.models import User
+
+
+from app.models import User, Post
 
 # declaration for the forms used in the html files
 
@@ -56,3 +58,7 @@ class EditProfileForm(FlaskForm):
 class PostForm(FlaskForm):
     post = TextAreaField("Enter your Post here",  validators=[DataRequired(), Length(min=1, max=200)])
     submit = SubmitField("Submit")
+
+
+
+
