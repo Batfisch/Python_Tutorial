@@ -20,6 +20,15 @@
     </table>
     {% for post in posts %}
         {%include "_post.html"%}
+        {% if user == current_user %}
+        <p><a href="{{ url_for('delete', post_id=post.id, username=user.username) }}">Delete^</a></p>
+        {%endif%}
     {% endfor %}
+    {% if prev_url %}
+    <a href="{{ prev_url }}">Newer posts</a>
+    {% endif %}
+    {% if next_url %}
+    <a href="{{ next_url }}">Older posts</a>
+    {% endif %}
 
 {% endblock %}

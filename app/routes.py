@@ -6,7 +6,6 @@ from app.models import User, Post
 from app import app, db
 from datetime import datetime
 
-
 @app.route('/', methods=["GET", "POST"])
 @app.route('/index', methods=["GET", "POST"])
 @login_required
@@ -22,9 +21,9 @@ def index():
         return redirect(url_for('index'))
 
     posts = current_user.followed_posts().paginate(page, app.config["POST_PER_PAGE"])
-    next_url = url_for('explore', page=posts.next_num) \
+    next_url = url_for('index', page=posts.next_num) \
         if posts.has_next else None
-    prev_url = url_for("explore", page=posts.prev_num) \
+    prev_url = url_for("index", page=posts.prev_num) \
         if posts.has_prev else None
     return render_template("index.html", title='Homepage', form=form, posts=posts.items,
                            next_url=next_url, prev_url=prev_url)
@@ -77,7 +76,7 @@ def register():
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    page = request.args.get('page', 1, type=int)
+    page = request.args.get('page', type=int)
     posts = user.posts.order_by(Post.timestamp.desc()).paginate(
         page, app.config['POST_PER_PAGE'], False)
     next_url = url_for('user', username=user.username, page=posts.next_num) \
@@ -147,13 +146,15 @@ def explore():
     return render_template("index.html", title='Explore', posts=posts.items, next_url=next_url, prev_url=prev_url)
 
 
-#@app.route("/delete")
-#@login_required
-##def delete():
-    #form = DeleteForm()
-    #if form.validate_on_submit():
-        #post_del = Post.query.filter_by(id=Post.id)
-        #db.session.delete(post_del)
-        #db.session.commit()
-       # flash('Your post is now deleted!')
-   # return render_template('user.html', user=user, form=form)
+@app.route('/user/<username>/delete/<post_id>', methods=["GET"])
+@login_required
+def delete(post_id,username):
+    post_del = Post.query.filter_by(id=post_id).one()
+    if current_user.id == post_del.user_id:
+        db.session.delete(post_del)
+        db.session.commit()
+        flash('Your post is now deleted!')
+    else :
+        flash("You cant delete posts from other users!")
+    return redirect(url_for("user", username=current_user.username))
+

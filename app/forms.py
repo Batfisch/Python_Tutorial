@@ -58,7 +58,3 @@ class EditProfileForm(FlaskForm):
 class PostForm(FlaskForm):
     post = TextAreaField("Enter your Post here",  validators=[DataRequired(), Length(min=1, max=200)])
     submit = SubmitField("Submit")
-
-
-
-
